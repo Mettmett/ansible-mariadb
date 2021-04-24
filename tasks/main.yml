@@ -1,0 +1,77 @@
+---
+# tasks/main.yml
+
+- name: Install MariaDB from official repository
+  hosts: all
+  become: true
+  vars:
+    mariadb_version: "10.5"
+
+  tasks:
+    - name: (sys) update host apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: (sys) install sys tools
+      apt:
+        name: "{{ item }}"
+        state: present
+        install_recommends: false
+      loop:
+        - software-properties-common
+        - dirmngr
+        - apt-transport-https
+
+    - name: (build) add apt signing key
+      apt_key:
+        url: "https://mariadb.org/mariadb_release_signing_key.asc"
+        state: present
+
+    - name: (sys DEBIAN) install repository file
+      apt_repository:
+        repo: "deb [arch=amd64] http://mariadb.mirrors.ovh.net/MariaDB/repo/{{ mariadb_version }}/debian buster main"
+        state: present
+        filename: mariadb
+      when: ansible_facts['distribution'] == "Debian"
+
+    - name: (sys UBUNTU) install install repository file
+      apt_repository:
+        repo: "deb [arch=amd64] http://mariadb.mirrors.ovh.net/MariaDB/repo/{{ mariadb_version }}/ubuntu focal main"
+        state: present
+        filename: mariadb
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    - name: (sys) new update host apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: (sys) install mariadb server and tools
+      apt:
+        name: "{{ item }}"
+        state: present
+        install_recommends: false
+      loop:
+        - mariadb-server
+        - mariadb-client
+
+    - name: (sys) installing custom mariadb configuration file
+      template:
+        src: "templates/custom.cnf.j2"
+        dest: "/etc/mysql/conf.d/custom.cnf"
+        owner: "root"
+        group: "root"
+        mode: 0644
+
+    - name: (sys) enabling mariadb systemd unit file
+      systemd:
+        name: "mariadb"
+        enabled: true
+        masked: false
+        daemon_reload: true
+
+    - name: (sys) reload mariadb server
+      systemd:
+        name: "mariadb"
+        state: restarted
