@@ -2,7 +2,7 @@
 
 galaxy_info:
   author: Julien HOMMET
-  description: Ansible role to install MariaDB server from official repository, with a custom (and simple) configuration file
+  description: Role to install MariaDB from official repository, with a custom and simple configuration file
   license: CC BY-NC-ND
 
   min_ansible_version: 2.9
