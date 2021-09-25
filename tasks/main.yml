@@ -55,15 +55,4 @@
     owner: "root"
     group: "root"
     mode: 0644
-
-- name: (sys) enabling mariadb systemd unit file
-  systemd:
-    name: "mariadb"
-    enabled: true
-    masked: false
-    daemon_reload: true
-
-- name: (sys) reload mariadb server
-  systemd:
-    name: "mariadb"
-    state: restarted
+  notify: start mariadb
