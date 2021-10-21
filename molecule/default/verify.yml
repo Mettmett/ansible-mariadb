@@ -5,15 +5,13 @@
   become: true
   tasks:
   - name: (check) Test if MariaDB service is up
-    systemd:
-      name: mariadb.service
-      state: started
-      enabled: true
+    shell: "systemctl status mariadb.service"
+    changed_when: false
 
   - name: (check) Test if MariaDB port is open and reachable
     shell: "ss -ntlp4 | grep mariadb"
     changed_when: false
 
-  - name: (check) Little test of MariaDB request
+  - name: (check) Test if MariaDB can handle requests
     shell: "mysql -h localhost -e 'SELECT 1;'"
     changed_when: false
