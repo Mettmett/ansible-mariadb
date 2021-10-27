@@ -23,11 +23,8 @@ platforms:
         network_name: private_network
   - name: mariadb-debian
     box: debian/buster64
-    interfaces:
-      - auto_config: true
-        ip: 192.168.56.8
-        netmask: 24
-        network_name: private_network
+  - name: mariadb-debian11
+    box: debian/bullseye64
 
 provisioner:
   name: ansible
