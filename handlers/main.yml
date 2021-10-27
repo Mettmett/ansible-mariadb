@@ -1,8 +1,0 @@
----
-- name: start mariadb
-  systemd:
-    daemon_reload: true
-    enabled: true
-    masked: false
-    name: "mariadb"
-    state: started
